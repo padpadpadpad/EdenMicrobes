@@ -16,5 +16,5 @@ the datasets and analyses related to microbes at the Eden Project.
 ## Contact
 
 This project is primarily a collaboration between Daniel Padfield
-(<d.padfield@exeter.ac.uk>) at the University of Exeter and Julian Donal
-at the Eden Project.
+(<d.padfield@exeter.ac.uk>) at the University of Exeter and Julian
+Donald at the Eden Project.

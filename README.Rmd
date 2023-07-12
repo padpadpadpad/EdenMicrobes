@@ -25,4 +25,4 @@ The goal of **EdenMicrobes** is to document and track the progress of the datase
 
 ## Contact
 
-This project is primarily a collaboration between Daniel Padfield (d.padfield@exeter.ac.uk) at the University of Exeter and Julian Donal at the Eden Project.
+This project is primarily a collaboration between Daniel Padfield (d.padfield@exeter.ac.uk) at the University of Exeter and Julian Donald at the Eden Project.
