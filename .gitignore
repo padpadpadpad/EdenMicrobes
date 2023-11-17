@@ -3,6 +3,6 @@
 .Rdata
 .httr-oauth
 .DS_Store
-data/raw_data_16s_ITS/*
-data/raw_data_18s/*
+data/sequencing/raw_data_16s_ITS/*
+data/sequencing/raw_data_18s/*
 *.gdoc
