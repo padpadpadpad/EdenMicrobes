@@ -107,11 +107,11 @@ p1 <- ggplot(d_summary_temp) +
   geom_point(aes(ecosystem2, mean, fill = metric), shape = 21, position = position_dodge(width = 0.6), size = 3) +
   facet_wrap(~biome2, scales = 'free_x') +
   theme_bw(base_size = 16) +
-  labs(x = 'habitat', y = 'temperature (°C)') +
-  ylim(c(5, 35)) +
+  labs(x = 'habitat', y = 'Temperature (°C)') +
+  scale_y_continuous(breaks = seq(5, 35, by = 5), limits = c(5,35)) +
   scale_x_discrete(labels = scales::label_wrap(10)) +
-  scale_color_brewer(type = 'seq', palette = 'Reds', direction = -1) +
-  scale_fill_brewer(type = 'seq', palette = 'Reds', direction = -1)
+  scale_color_brewer('Metric', type = 'seq', palette = 'Reds', direction = -1) +
+  scale_fill_brewer('Metric', type = 'seq', palette = 'Reds', direction = -1)
 
 # keep only the moisture columns
 d_daily_moist <- d_daily %>%
@@ -141,10 +141,10 @@ p2 <- ggplot(d_summary_moist) +
   geom_point(aes(ecosystem2, mean, fill = metric), shape = 21, position = position_dodge(width = 0.6), size = 3) +
   facet_wrap(~biome2, scales = 'free_x') +
   theme_bw(base_size = 16) +
-  labs(x = 'habitat', y = 'Moisture (%)') +
+  labs(x = 'Habitat', y = 'Moisture (%)') +
   scale_x_discrete(labels = scales::label_wrap(10)) +
-  scale_color_brewer(type = 'seq', palette = 'Blues', direction = -1) +
-  scale_fill_brewer(type = 'seq', palette = 'Blues', direction = -1)
+  scale_color_brewer('Metric', type = 'seq', palette = 'Blues', direction = -1) +
+  scale_fill_brewer('Metric', type = 'seq', palette = 'Blues', direction = -1)
 
 p2
 
