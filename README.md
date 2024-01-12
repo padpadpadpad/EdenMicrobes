@@ -68,35 +68,36 @@ and data from monitoring of abiotic variables present in `climate_data`.
 
   - Root_biomass -Roots were extracted from the remainder of pooled soil samples using methods developed by Frasier et al. (2016). To separate the roots from the soil the samples were washed through a submerged 250 μm sieve with running tap water, and larger soil aggregates were broken down by hand. Roots were then collected from the surface of the sieve using tweezers, placed in foil trays, weighed and oven dried at 60°C for 12 hours, then reweighed to give a representative root biomass for each plot.
 
-  - pH - Measured in water (10cm3 of soil in 25ml of water) using a Jensen desktop probe. 
+  - pH - Measured in water (15 g fresh weight soil suspended in 20ml of deinonised water) using a Jensen desktop probe, calibrated with standard buffer solutions of pH 7 and pH 4.
+
 
   - Soil_respiration - measured using a TARGAS-1 CO2/H2O infrared gas analyser with soil respiration chamber (PP systems 2016).
 
-  - pH2 -
+  - pH2 - Here and below, methods conducted by NRM Cawood Laboratories following their set methodology. Measured in water (15 g fresh weight soil suspended in 20ml of deinonised water) using a Jensen desktop probe, calibrated with standard buffer solutions of pH 7 and pH 4.
 
-  - Phosphorus -
+  - Phosphorus --	Phosphorus - Sodium Bicarbonate Extractable - Olsens - reported as mg/l dry basis.
 
-  - Potassium -
+  - Potassium - Ammonium Nitrate Extractable - reported as mg/l dry basis.
 
-  - Magnesium -
+  - Magnesium - Ammonium Nitrate Extractable - reported as mg/l dry basis.
 
-  - Sand -
+  - Sand - Textural Classification Reported as % w/w dry matter basis.
 
-  - Silt -
+  - Silt - Textural Classification Reported as % w/w dry matter basis.
 
-  - Clay -
+  - Clay - Textural Classification Reported as % w/w dry matter basis.
 
-  - Nitrogen -
+  - Nitrogen - Dumas - reported as % w/w dry basis.
 
-  - Manganese -
+  - Manganese - DTPA Extractable Reported as mg/l dry basis.
 
-  - Iron -
+  - Iron - DTPA Extractable Reported as mg/l dry basis.
 
-  - Phosphorus2 -
+  - Phosphorus2 - Reported as mg/kg or % w/wdry basis.
 
-  - Carbon -
+  - Carbon - Dumas - reported as % w/w dry basis.
 
-  - C:N -
+  - C:N - Dumas - reported as % w/w dry basis.
 
 ## Contact
 
