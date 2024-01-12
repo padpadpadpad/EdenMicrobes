@@ -51,9 +51,8 @@ and data from monitoring of abiotic variables present in `climate_data`.
 
 <!-- -->
 
-- **Eden_soil_chem_data_nov23.csv** contains nutrient and chemical
-  composition data for each sample. A breakdown of all the column names
-  and their units is below:
+- **Eden_soil_chem_data_nov23.csv** contains nutrient and chemical composition data for each sample. A breakdown of all the column names and their units is below, for further information see Duley et al. (2023) and supplementary materials here (https://onlinelibrary.wiley.com/doi/abs/10.1111/rec.13831):
+
 
   - Sample - Sample name that corresponds to a sequencing file and a
     sampling point.
@@ -65,15 +64,13 @@ and data from monitoring of abiotic variables present in `climate_data`.
   - Biome - Which biome did the sample come from (Humid = rainforest,
     Dry = mediterranean).
 
-  - Soil_OM -
+  - Soil_OM / GWC -Loss on ignition was used as a proxy for soil moisture and organic matter content (Heiri et al. 2001), following methods developed by Jensen et al. (2018) and Joy et al. (2021). Approximately 40g of soil from each pooled sample was placed in a foil tray and dried in an oven at 105°C for 24 hours, these were reweighed to determine gravimetric moisture content (GWC). From this, subsamples of 5g were placed in crucibles and transferred to a muffle furnace at 600°C for 4 hours. Samples were cooled by being left in the furnace overnight after being turned off, before being reweighed.
 
-  - GWC -
+  - Root_biomass -Roots were extracted from the remainder of pooled soil samples using methods developed by Frasier et al. (2016). To separate the roots from the soil the samples were washed through a submerged 250 μm sieve with running tap water, and larger soil aggregates were broken down by hand. Roots were then collected from the surface of the sieve using tweezers, placed in foil trays, weighed and oven dried at 60°C for 12 hours, then reweighed to give a representative root biomass for each plot.
 
-  - Root_biomass -
+  - pH - Measured in water (10cm3 of soil in 25ml of water) using a Jensen desktop probe. 
 
-  - pH -
-
-  - Soil_respiration -
+  - Soil_respiration - measured using a TARGAS-1 CO2/H2O infrared gas analyser with soil respiration chamber (PP systems 2016).
 
   - pH2 -
 
