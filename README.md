@@ -8,7 +8,17 @@ the datasets and analyses related to microbes at the Eden Project.
 
 ## Outline
 
-Outline the project here!
+This research aims to determine the relative contribution of various soil abiotic conditions (soil chemistry / microclimate) in explaining soil microbial community diversity and composition. 
+Using the enclosed controlled biomes of the Eden Project botanic garden as mesocosms, we aim to determine the effects of biotic and abiotic controls on SMC composition, after accounting for spatial scale effects. 
+
+Environmental DNA (eDNA) was sampled across the site, with collection, extraction and sequencing of eDNA from 128 soil samples in October 2019, from 10 different plant assemblage
+habitats. Sampling was scaled so as to encompass variation in SMCs at 1m, 10m and 100m, and thus account for any spatial autocorrelation. Samples were collected across two contrasting temperature regimes (Humid vs Dry), with sample-specific abiotic data relating to soil temperature, moisture and chemistry at a microclimatic scale. 
+
+Plant identity and community turnover will be obtained from eDNA at each of the sites (see Duley et al. 2022), before SMC sequences were amplified using ITS1, 16S, 18S RNA marker genes for fungi, bacteria and eukaryotes respectively.
+
+The influence of plant community and abiotic conditions on local alpha-diversity, and regional beta-diversity of the SMC will then be assessed by conducting Principle Coordinate Ordination and PERMANOVA analysis. Structural Equation Models (SEMs) and variance partitioning will be used to explore the explanatory power of abiotic conditions, the identity of individual plants and plant community characteristics, whilst accounting for spatial autocorrelation. 
+
+It is hypothesised that abiotic conditions will explain the greatest proportion of community dissimilarity, with microclimate (soil temperature and humidity) having greater effects than soil chemistry. However, after accounting for abiotic variation plant and microbial diversity are likely to be positively correlated. 
 
 ## Scripts
 
@@ -34,11 +44,11 @@ and data from monitoring of abiotic variables present in `climate_data`.
   - Biome - Which biome did the sample come from (Humid = rainforest,
     Dry = mediterranean).
 
-  - GPS -
+  - GPS - Coordinates corresponding to the point from which soil was sampled
 
-  - X -
+  - X - longitude
 
-  - Y -
+  - Y - latitude
 
 ### Sequencing data (in data/sequencing)
 
