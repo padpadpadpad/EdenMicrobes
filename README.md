@@ -84,16 +84,18 @@ For further information see Duley et al. (2023) and supplementary materials here
   - Biome - Which biome did the sample come from (Humid = rainforest,
     Dry = mediterranean).
 
-  - Soil_OM / GWC -Loss on ignition was used as a proxy for soil moisture and organic matter content (Heiri et al. 2001), following methods developed by Jensen et al. (2018) and Joy et al. (2021). Approximately 40g of soil from each pooled sample was placed in a foil tray and dried in an oven at 105°C for 24 hours, these were reweighed to determine gravimetric moisture content (GWC). From this, subsamples of 5g were placed in crucibles and transferred to a muffle furnace at 600°C for 4 hours. Samples were cooled by being left in the furnace overnight after being turned off, before being reweighed.
+  - Soil_OM / GWC - Performed on samples aggregated at the quadrat level. Loss on ignition was used as a proxy for soil moisture and organic matter content (Heiri et al. 2001), following methods developed by Jensen et al. (2018) and Joy et al. (2021). Approximately 40g of soil from each pooled sample was placed in a foil tray and dried in an oven at 105°C for 24 hours, these were reweighed to determine gravimetric moisture content (GWC). From this, subsamples of 5g were placed in crucibles and transferred to a muffle furnace at 600°C for 4 hours. Samples were cooled by being left in the furnace overnight after being turned off, before being reweighed.
 
-  - Root_biomass -Roots were extracted from the remainder of pooled soil samples using methods developed by Frasier et al. (2016). To separate the roots from the soil the samples were washed through a submerged 250 μm sieve with running tap water, and larger soil aggregates were broken down by hand. Roots were then collected from the surface of the sieve using tweezers, placed in foil trays, weighed and oven dried at 60°C for 12 hours, then reweighed to give a representative root biomass for each plot.
+  - Root_biomass - Performed on samples aggregated at the quadrat level. Roots were extracted from the remainder of pooled soil samples using methods developed by Frasier et al. (2016). To separate the roots from the soil the samples were washed through a submerged 250 μm sieve with running tap water, and larger soil aggregates were broken down by hand. Roots were then collected from the surface of the sieve using tweezers, placed in foil trays, weighed and oven dried at 60°C for 12 hours, then reweighed to give a representative root biomass for each plot.
 
-  - pH - Measured in water (15 g fresh weight soil suspended in 20ml of deinonised water) using a Jensen desktop probe, calibrated with standard buffer solutions of pH 7 and pH 4.
+  - pH - Performed on samples aggregated at the quadrat level. Measured in water (15 g fresh weight soil suspended in 20ml of deinonised water) using a Jensen desktop probe, calibrated with standard buffer solutions of pH 7 and pH 4.
 
 
-  - Soil_respiration - measured using a TARGAS-1 CO2/H2O infrared gas analyser with soil respiration chamber (PP systems 2016).
+  - Soil_respiration - Performed on samples aggregated at the quadrat level. Measured using a TARGAS-1 CO2/H2O infrared gas analyser with soil respiration chamber (PP systems 2016).
 
-  - pH2 - Here and below, methods conducted by NRM Cawood Laboratories following their set methodology. Measured in water (15 g fresh weight soil suspended in 20ml of deinonised water) using a Jensen desktop probe, calibrated with standard buffer solutions of pH 7 and pH 4.
+Here and below, methods conducted by NRM Cawood Laboratories following their set methodology, with samples aggregated at the habitat level.
+
+  - pH2 -  Measured in water (15 g fresh weight soil suspended in 20ml of deinonised water) using a Jensen desktop probe, calibrated with standard buffer solutions of pH 7 and pH 4.
 
   - Phosphorus --	Phosphorus - Sodium Bicarbonate Extractable - Olsens - reported as mg/l dry basis.
 
