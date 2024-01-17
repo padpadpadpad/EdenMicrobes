@@ -10,6 +10,7 @@ the datasets and analyses related to microbes at the Eden Project.
 
 Using the enclosed controlled biomes of the Eden Project botanic garden as mesocosms, we aim to determine the effects of biotic (above ground plant) and abiotic (soil physicochemistry, microclimate) controls on soil microbial community (SMC) composition, after accounting for spatial scale effects. 
 
+- **Soil Sampling Methods**
 Environmental DNA (eDNA) was sampled across the site, with collection, extraction and sequencing of eDNA from 128 soil samples in October 2019, from 10 different plant assemblage
 habitats. Within two temperature controlled "biomes", 128 soil samples were collected across 10 distinct "ecosystems" characterised by either high or low plant diversity (see table 1).
 
@@ -32,45 +33,7 @@ habitats. Within two temperature controlled "biomes", 128 soil samples were coll
 ### Figure 1: Sampling INSERT IMAGE
 https://github.com/padpadpadpad/EdenMicrobes/blob/main/plots/temperature_moisture.png
 
-At each sample plot, from each corner of a 2 x 2 m quadrat, four soil samples were collected using sterile soil augers. Any leaf litter was removed from the surface, before approximately 200g of soil was collected, typically representing 3 auger cores worth of material, from within the first 10 cm of the topsoil. Auger blades were “cleaned” by immersion in soil adjacent to the collection point prior to each sampling event. Blades were changed between sampling of the humid and dry biomes. The soil cores were sealed in sterile plastic bags and transported to the onsite laboratory for immediate processing. Sampling was scaled so as to encompass variation in SMCs at 1m, 10m and 100m, and thus account for any spatial autocorrelation. Samples were collected across two contrasting temperature regimes (Humid vs Dry), with sample-specific abiotic data relating to soil temperature, moisture and chemistry at a microclimatic scale. 
-
-Plant identity and community turnover was be obtained from the same pool of extracted eDNA at each of the sites (see Duley et al. 2022), before SMC sequences were amplified using ITS1, 16S, 18S RNA marker genes for fungi, bacteria and eukaryotes respectively.
-
-The influence of plant community and abiotic conditions on local alpha-diversity, and regional beta-diversity of the SMC will then be assessed by conducting Principle Coordinate Ordination and PERMANOVA analysis. Structural Equation Models (SEMs) and variance partitioning will be used to explore the explanatory power of abiotic conditions, the identity of individual plants and plant community characteristics, whilst accounting for spatial autocorrelation. 
-
-It is hypothesised that abiotic conditions will explain the greatest proportion of community dissimilarity, with microclimate (soil temperature and humidity) having greater effects than soil chemistry. However, after accounting for abiotic variation plant and microbial diversity are likely to be positively correlated. 
-
-## Scripts
-
-- **visualise_climate.R** looks at the data from the temperature and
-  moisture probes that were placed in the habitats. Produces
-  **temperature_moisture.png**.
-
-## Datasets
-
-We have sequencing datasets of the biomes contained in `data/sequencing`
-and data from monitoring of abiotic variables present in `climate_data`.
-
-- **Eden_GPS_data.csv** contains the GPS coordinates of each site. A
-  breakdown of the columns are below:
-
-  - Sample - Sample name that corresponds to a sequencing file and a
-    sampling point.
-
-  - Ecosystem - What ecosystem did the sample come from.
-
-  - Diversity - Whether the sample has high or low plant diversity.
-
-  - Biome - Which biome did the sample come from (Humid = rainforest,
-    Dry = mediterranean).
-
-  - GPS - Coordinates corresponding to the point from which soil was sampled
-
-  - X - longitude
-
-  - Y - latitude
-
-### Sequencing data (in data/sequencing)
+At each sample plot, from each corner of a 2 x 2 m quadrat, four soil samples were collected using sterile soil augers. Any leaf litter was removed from the surface, before approximately 200g of soil was collected, typically representing 3 auger cores worth of material, from within the first 10 cm of the topsoil. Auger blades were “cleaned” by immersion in soil adjacent to the collection point prior to each sampling event. Blades were changed between sampling of the humid and dry biomes. The soil cores were sealed in sterile plastic bags and transported to the onsite laboratory for immediate processing. 
 
 - **Sequencing Methods**
 
@@ -84,6 +47,7 @@ PCRs were performed in triplicate, meaning that each sample was extracted twice,
   
 - the ITS1 region of the nuclear ribosomal RNA genes as a diagnostic marker for Fungi with the following universal primers : forward (5’-CAAGAGATCCGTTGTTGAAAGTK-3’), and reverse (5’-GGAAGTAAAAGTCGTAACAAGG-3’) (Epp et al 2012; Taberlet et al 2018). PCR was conducted with 35 cycles, denaturation at 95°C for 30s, annealing at 55°C for 30s, elongation at 72°C for 60s, with the final elongation for 7 mins.
 
+### Table 2: PCR Amplification specifications
 |                                                                                         | Sper01                                                  | Bact01                                                   | Fung02                                                   | Euka02                                                   |
 | --------------------------------------------------------------------------------------- | ------------------------------------------------------- | -------------------------------------------------------- | -------------------------------------------------------- | -------------------------------------------------------- |
 | Taxa                                                                                    | Plants (Spermatophyta)                                  | Bacteria                                                 | Fungi                                                    | Eukaryotes                                               |
@@ -99,13 +63,17 @@ PCRs were performed in triplicate, meaning that each sample was extracted twice,
 Three negative PCR controls per plate were amplified and sequenced in parallel with the regular samples. Three positive controls were also included and consisted of XX TO CONFIRM XX.  Six wells per PCR plate were left empty (non-used tag combinations) to control for tag jumps which can occur during amplification and sequencing (see below for downstream data curation). All PCR products were pooled and the library was constructed using the Illumina TruSeq NanoPCRFree kit following the supplier’s instructions (Illumina Inc., San Diego, California, USA). Sequencing was performed on a Hiseq run (Illumina platform,San Diego, CA, USA) at the GeT-Plage platform (Toulouse, France).
 
 - **Bioinformatics Methods**
-All bioinformatic analyses were performed using the GenoToul bioinformatics platform, with sequence reads processed using the OBITOOLS package (Boyer et al. 2016), with initial compilation and filtering of contaminants using and R scripts (R Core Team, 2020) following the procedure described in Zinger et al. (2019). To consolidate ASVs, tools from Phyloseq to merge files were deployed..., before DADA2 (..) was used to assign taxonomy from UNITE () and SILVA () datasets.
+Bioinformatic analyses were performed using the GenoToul bioinformatics platform, with sequence reads processed using the OBITOOLS package (Boyer et al. 2016), with initial compilation and filtering of contaminants using and R scripts (R Core Team, 2020) following the procedure described in Zinger et al. (2019). To consolidate ASVs, further processing was performed using the University of Exeter RStudio Server...tools from Phyloseq to merge files were deployed..., before DADA2 (..) was used to assign taxonomy from UNITE () and SILVA () datasets.
 
-Bioinformatic analyses were performed on the GenoToul bioinformatics platform (Toulouse, France), with the OBITOOLS package (Boyer et al. 2016). First, ‘illuminapairedend’ was used to assemble paired-end reads. This algorithm is based on an exact alignment algorithm that considers the quality scores at all positions during the assembly process. Subsequently, we used the ‘ngsfilter’ command to identify and remove the primers and tags on each read, and assign reads to their respective samples. This program was used with its default parameters tolerating two mismatches for each of the two primers and no mismatch for the tags. Following this, sequencing reads were dereplicated using the ‘obiuniq’ command. Sequences of low quality (containing Ns or with paired-end alignment scores below 50) were excluded using the ‘obigrep’ command. The same command was used to exclude sequences represented by only one read (singletons) as they are more likely to be molecular artefacts (Taberlet et al. 2018). Sequences outside of the preset range were also discarded (90-200 in length for Eukaryotes; 30-400 for Bacteria; 30-900 for Fungi). 
+Bioinformatic analyses were performed on the GenoToul bioinformatics platform (Toulouse, France), with the OBITOOLS package (Boyer et al. 2016). PCR replicates were prepared and processed in 3 seperate libraries, with initial processing run for each of these seperately, prior to subsequent merging. First, ‘illuminapairedend’ was used to assemble paired-end reads. This algorithm is based on an exact alignment algorithm that considers the quality scores at all positions during the assembly process. Subsequently, we used the ‘ngsfilter’ command to identify and remove the primers and tags on each read, and assign reads to their respective samples. This program was used with its default parameters tolerating two mismatches for each of the two primers and no mismatch for the tags. Following this, sequencing reads were dereplicated using the ‘obiuniq’ command. Sequences of low quality (containing Ns or with paired-end alignment scores below 50) were excluded using the ‘obigrep’ command. The same command was used to exclude sequences represented by only one read (singletons) as they are more likely to be molecular artefacts (Taberlet et al. 2018). Sequences outside of the preset range were also discarded (90-200 in length for Eukaryotes; 30-400 for Bacteria; 30-900 for Fungi). 
 
-To assign a taxon to fungal ASVs, we built a reference sequence database using the ecoPCR programme (Ficetola et al. 2010) and the fungi specific markers on the European Molecular Biology Laboratory (EMBL; release 141). ASVs were then assigned a taxonomy, using OBITOOL’s ecotag programme (Boyer et al. 2016), which performs a global alignment of each ASV sequence (the query) against each reference. The reference taxon assigned to each ASV corresponds to the Last Common Ancestor of all the best-match sequences for the query. For taxonomic assignment of bacteria and eukaryote OTUs, the SILVA taxonomic database was used (version 1.3; Quast et al., 2012). Classification was performed by a local nucleotide BLAST search against the non-redundant version of the SILVA SSU Ref dataset (release 132; http://www.arb-silva.de) using blastn (version 2.2.30+; http://blast.ncbi.nlm.nih.gov/Blast.cgi) with standard settings (Camacho et al., 2009). 
+Datasets were subsequently filtered to remove contaminants as well as artefacts such as PCR chimeras and remaining sequencing errors, following Zinger et al. (2019) and using the metabaR R package (Zinger et al 2020), in R version 3.6.1 (R Development Core Team, 2013). The filtering process consisted of three steps: (i) a negative control-based filtering. ASVs whose maximum abundance was found in extraction/PCR negative controls were removed from the dataset, as they were likely to be reagent/aerosol contaminants, better amplified in the absence of competing DNA fragments as it is the case in biological samples. (ii) an abundance-based filtering. This procedure targets incorrect assignment of a few numbers of sequences corresponding to true ASVs occurring to the wrong sample, a phenomenon called “tag-switching” (Esling et al. 2015), “tag jumps” (Schnell et al. 2015) or “cross-talk” (Edgar 2018). It consists in setting ASVs abundances to 0 in samples where their abundance represents < 0.03% of the total OTU abundance in the entire dataset. (iii) Finally, we conducted a PCR-based filtering by considering any PCR reaction that yielded less than 1000 reads for fungi, bacteria and eukaryotes as non-functional, and removed them from the dataset. The number of reads, ASVs and PCRs removed at each stage for each marker are detailed in table 3.
 
-Datasets were subsequently filtered to remove contaminants as well as artefacts such as PCR chimeras and remaining sequencing errors, following Zinger et al. (2019) and using the metabaR R package (Zinger et al 2020), in R version 3.6.1 (R Development Core Team, 2013). The filtering process consisted of four steps: (i) a negative control-based filtering. ASVs whose maximum abundance was found in extraction/PCR negative controls were removed from the dataset, as they were likely to be reagent/aerosol contaminants, better amplified in the absence of competing DNA fragments as it is the case in biological samples. (ii) a reference-based filtering. ASVs which are too dissimilar from sequences available in reference databases are potential chimeras generated during sequencing and amplification. In this study, we chose to set similarity thresholds at 80% for bacteria and eukaryotes and due to the marker being more polymorphic, 65% for fungi. In addition, we removed all taxa that are not targeted by the primer used. (iii) an abundance-based filtering. This procedure targets incorrect assignment of a few numbers of sequences corresponding to true ASVs occurring to the wrong sample, a phenomenon called “tag-switching” (Esling et al. 2015), “tag jumps” (Schnell et al. 2015) or “cross-talk” (Edgar 2018). It consists in setting ASVs abundances to 0 in samples where their abundance represents < 0.03% of the total OTU abundance in the entire dataset. (iv) Finally, we conducted a PCR-based filtering by considering any PCR reaction that yielded less than 1000 reads for fungi, bacteria and eukaryotes as non-functional, and removed them from the dataset. The number of reads, ASVs and PCRs removed at each stage for each marker are detailed in the table below.
+Following initial curation, the three separate libraries were merged to create a single phyloseq object per marker which contained all of the ASVs x PCR reads. These were then assigned a taxonomy from the SILVA taxonomic database for Bacteria and Eukaryotes (version 1.3; release 132 Quast et al., 2012), and the UNITE data base () for fungi using the DADA2 pipeline ()....
+
+To this, a further subset of curation was performed: (i) PCRs with a readcount below a set threshold XXXX were removed (ii) Using the DADA2 processing, with a bootstrapping score set at 50, ASVs were removed from the dataset if they could not be assigned to the Phylum level  
+
+### Table 3: ASV number and total readcount evolution following bioinformatic curation and contaminant removal
 
 |           | paired   |          | ngs_filtered |          | curated  |          | uniq    |          | no_singletons |          | PCRs above threshold (>1000) | Extraction Contaminent Removal | PCR Contaminent Removal | Sequencing Contaminent Removal |
 | --------- | -------- | -------- | ------------ | -------- | -------- | -------- | ------- | -------- | ------------- | -------- | ---------------------------- | ------------------------------ | ----------------------- | ------------------------------ |
@@ -121,6 +89,41 @@ Datasets were subsequently filtered to remove contaminants as well as artefacts 
 | 18S-Rep3  | 9110898  | 9110898  | 7732534      | 7732534  | 7694307  | 7694307  | 408830  | 7694307  | 95583         | 7381060  | 244                          | 65                             | 19                      | 150                            |
 
 Upon filtering completion, remaining PCRs per technical replicate were summed and the read count of technical replicates was normalised to reduce potential bias caused by PCR stochasticity and differential sequencing efforts. Standardization consisted in randomly resampling (with replacement) a number of reads that corresponded to the first quartile of the total read number for reads per samples. This returns samples with a read count equal across all samples, whilst maintaining sample specific OTU relative abundances. To do so, each OTU in each sample was resampled with replacement a thousand times, following an approach detailed by Veresoglou et al. (2019). Finally, in order to reduce stochastic variation of taxa from one soil core to another, and to match DNA sequencing data with the soil chemistry ones, the four replicate samples within each subplot were aggregated by summing reads (after normalisation).
+
+- **Next Steps**
+
+The influence of plant community and abiotic conditions on local alpha-diversity, and regional beta-diversity of the SMC will then be assessed by conducting Principle Coordinate Ordination and PERMANOVA analysis. Structural Equation Models (SEMs) and variance partitioning will be used to explore the explanatory power of abiotic conditions, the identity of individual plants and plant community characteristics, whilst accounting for spatial autocorrelation. 
+
+It is hypothesised that abiotic conditions will explain the greatest proportion of community dissimilarity, with microclimate (soil temperature and humidity) having greater effects than soil chemistry. However, after accounting for abiotic variation plant and microbial diversity are likely to be positively correlated. 
+
+## Scripts
+
+- **visualise_climate.R** looks at the data from the temperature and
+  moisture probes that were placed in the habitats. Produces
+  **temperature_moisture.png**.
+
+## Datasets
+
+We have sequencing datasets of the biomes contained in `data/sequencing` and data from monitoring of abiotic variables present in `climate_data`.
+
+- **Eden_GPS_data.csv** contains the GPS coordinates of each site. A breakdown of the columns are below:
+
+  - Sample - Sample name that corresponds to a sequencing file and a sampling point.
+
+  - Ecosystem - What ecosystem did the sample come from.
+
+  - Diversity - Whether the sample has high or low plant diversity.
+
+  - Biome - Which biome did the sample come from (Humid = rainforest,
+    Dry = mediterranean).
+
+  - GPS - Coordinates corresponding to the point from which soil was sampled
+
+  - X - longitude
+
+  - Y - latitude
+
+### Sequencing data (in data/sequencing)
 
 
 ### Climate data (in data/climate)
@@ -145,7 +148,6 @@ For further information see Duley et al. (2023) and supplementary materials here
   - Root_biomass - Performed on samples aggregated at the quadrat level. Roots were extracted from the remainder of pooled soil samples using methods developed by Frasier et al. (2016). To separate the roots from the soil the samples were washed through a submerged 250 μm sieve with running tap water, and larger soil aggregates were broken down by hand. Roots were then collected from the surface of the sieve using tweezers, placed in foil trays, weighed and oven dried at 60°C for 12 hours, then reweighed to give a representative root biomass for each plot.
 
   - pH - Performed on samples aggregated at the quadrat level. Measured in water (15 g fresh weight soil suspended in 20ml of deinonised water) using a Jensen desktop probe, calibrated with standard buffer solutions of pH 7 and pH 4.
-
 
   - Soil_respiration - Performed on samples aggregated at the quadrat level. Measured using a TARGAS-1 CO2/H2O infrared gas analyser with soil respiration chamber (PP systems 2016).
 
