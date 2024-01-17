@@ -13,6 +13,8 @@ Using the enclosed controlled biomes of the Eden Project botanic garden as mesoc
 Environmental DNA (eDNA) was sampled across the site, with collection, extraction and sequencing of eDNA from 128 soil samples in October 2019, from 10 different plant assemblage
 habitats. Within two temperature controlled "biomes", 128 soil samples were collected across 10 distinct "ecosystems" characterised by either high or low plant diversity (see table 1).
 
+### Table 1: Sample design
+
 | Biome         | Habitat      | Plant diversity | Plots | Samples | Extractions | PCRs |
 | ------------- | ------------ | --------------- | ----- | ------- | ----------- | ---- |
 | Mediterranean | South Africa | High            | 4     | 16      | 32          | 96   |
@@ -27,7 +29,7 @@ habitats. Within two temperature controlled "biomes", 128 soil samples were coll
 | Rainforest    | Amazon       | High            | 4     | 16      | 32          | 96   |
 | Totals        | 10           | 2               | 32    | 128     | 256         | 768  |
 
-Figure 1: INSERT IMAGE
+### Figure 1: Sampling INSERT IMAGE
 https://github.com/padpadpadpad/EdenMicrobes/blob/main/plots/temperature_moisture.png
 
 At each sample plot, from each corner of a 2 x 2 m quadrat, four soil samples were collected using sterile soil augers. Any leaf litter was removed from the surface, before approximately 200g of soil was collected, typically representing 3 auger cores worth of material, from within the first 10 cm of the topsoil. Auger blades were “cleaned” by immersion in soil adjacent to the collection point prior to each sampling event. Blades were changed between sampling of the humid and dry biomes. The soil cores were sealed in sterile plastic bags and transported to the onsite laboratory for immediate processing. Sampling was scaled so as to encompass variation in SMCs at 1m, 10m and 100m, and thus account for any spatial autocorrelation. Samples were collected across two contrasting temperature regimes (Humid vs Dry), with sample-specific abiotic data relating to soil temperature, moisture and chemistry at a microclimatic scale. 
