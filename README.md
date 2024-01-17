@@ -31,7 +31,7 @@ habitats. Within two temperature controlled "biomes", 128 soil samples were coll
 | Totals        | 10           | 2               | 32    | 128     | 256         | 768  |
 
 ### Figure 1: Sampling INSERT IMAGE
-  https://github.com/padpadpadpad/EdenMicrobes/blob/main/plots/ 
+[  https://github.com/padpadpadpad/EdenMicrobes/blob/main/plots/ ](https://github.com/padpadpadpad/EdenMicrobes/blob/main/plots/sample_design_plot.jpeg)
 
 At each sample plot, from each corner of a 2 x 2 m quadrat, four soil samples were collected using sterile soil augers. Any leaf litter was removed from the surface, before approximately 200g of soil was collected, typically representing 3 auger cores worth of material, from within the first 10 cm of the topsoil. Auger blades were “cleaned” by immersion in soil adjacent to the collection point prior to each sampling event. Blades were changed between sampling of the humid and dry biomes. The soil cores were sealed in sterile plastic bags and transported to the onsite laboratory for immediate processing. 
 
