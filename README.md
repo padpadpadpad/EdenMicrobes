@@ -8,11 +8,28 @@ the datasets and analyses related to microbes at the Eden Project.
 
 ## Outline
 
-This research aims to determine the relative contribution of various soil abiotic conditions (soil chemistry / microclimate) in explaining soil microbial community diversity and composition. 
-Using the enclosed controlled biomes of the Eden Project botanic garden as mesocosms, we aim to determine the effects of biotic and abiotic controls on SMC composition, after accounting for spatial scale effects. 
+Using the enclosed controlled biomes of the Eden Project botanic garden as mesocosms, we aim to determine the effects of biotic (above ground plant) and abiotic (soil physicochemistry, microclimate) controls on soil microbial community (SMC) composition, after accounting for spatial scale effects. 
 
 Environmental DNA (eDNA) was sampled across the site, with collection, extraction and sequencing of eDNA from 128 soil samples in October 2019, from 10 different plant assemblage
-habitats. At each sample plot, from each corner of a 2 x 2 m quadrat, four soil samples were collected using sterile soil augers. Any leaf litter was removed from the surface, before approximately 200g of soil was collected, typically representing 3 auger cores worth of material, from within the first 10 cm of the topsoil. Auger blades were “cleaned” by immersion in soil adjacent to the collection point prior to each sampling event. Blades were changed between sampling of the humid and dry biomes. The soil cores were sealed in sterile plastic bags and transported to the onsite laboratory for immediate processing. Sampling was scaled so as to encompass variation in SMCs at 1m, 10m and 100m, and thus account for any spatial autocorrelation. Samples were collected across two contrasting temperature regimes (Humid vs Dry), with sample-specific abiotic data relating to soil temperature, moisture and chemistry at a microclimatic scale. 
+habitats. Within two temperature controlled "biomes", 128 soil samples were collected across 10 distinct "ecosystems" characterised by either high or low plant diversity (see table 1).
+
+| Biome         | Habitat      | Plant diversity | Plots | Samples | Extractions | PCRs |
+| ------------- | ------------ | --------------- | ----- | ------- | ----------- | ---- |
+| Mediterranean | South Africa | High            | 4     | 16      | 32          | 96   |
+| Mediterranean | Australia    | High            | 4     | 16      | 32          | 96   |
+| Mediterranean | Citrus       | Low             | 2     | 8       | 16          | 48   |
+| Mediterranean | Vines        | Low             | 2     | 8       | 16          | 48   |
+| Mediterranean | Med Basin    | High            | 4     | 16      | 32          | 96   |
+| Rainforest    | Bamboo       | Low             | 2     | 8       | 16          | 48   |
+| Rainforest    | Cocoa        | Low             | 2     | 8       | 16          | 48   |
+| Rainforest    | Malaysia     | High            | 4     | 16      | 32          | 96   |
+| Rainforest    | West Africa  | High            | 4     | 16      | 32          | 96   |
+| Rainforest    | Amazon       | High            | 4     | 16      | 32          | 96   |
+| Totals        | 10           | 2               | 32    | 128     | 256         | 768  |
+
+At each sample plot, from each corner of a 2 x 2 m quadrat, four soil samples were collected using sterile soil augers. Any leaf litter was removed from the surface, before approximately 200g of soil was collected, typically representing 3 auger cores worth of material, from within the first 10 cm of the topsoil. Auger blades were “cleaned” by immersion in soil adjacent to the collection point prior to each sampling event. Blades were changed between sampling of the humid and dry biomes. The soil cores were sealed in sterile plastic bags and transported to the onsite laboratory for immediate processing. Sampling was scaled so as to encompass variation in SMCs at 1m, 10m and 100m, and thus account for any spatial autocorrelation. Samples were collected across two contrasting temperature regimes (Humid vs Dry), with sample-specific abiotic data relating to soil temperature, moisture and chemistry at a microclimatic scale. 
+
+
 
 Plant identity and community turnover will be obtained from eDNA at each of the sites (see Duley et al. 2022), before SMC sequences were amplified using ITS1, 16S, 18S RNA marker genes for fungi, bacteria and eukaryotes respectively.
 
