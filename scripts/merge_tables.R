@@ -13,8 +13,8 @@ colnames(d_example)
 
 # load in example dataset
 d <- readRDS('data/sequencing/processed/eden_bact_rep1_postclean.rds')
-d2 <- readRDS('data/sequencing/processed/eden_bact_rep2_postclean.rds')
-d3 <- readRDS('data/sequencing/processed/eden_bact_rep3_postclean.rds')
+d2 <- readRDS('data/sequencing/processed/eden_bact_rep2_postclean_24.rds')
+d3 <- readRDS('data/sequencing/processed/eden_bact_rep3_postclean_24.rds')
 
 d_samps <- d$samples
 d2_samps <- d2$samples
@@ -34,9 +34,9 @@ make_seq_table <- function(file){
   return(d_reads)
 }
 
-bact1 <- make_seq_table('data/sequencing/processed/eden_bact_rep1_postclean.rds')
-bact2 <- make_seq_table('data/sequencing/processed/eden_bact_rep2_postclean.rds')
-bact3 <- make_seq_table('data/sequencing/processed/eden_bact_rep3_postclean.rds')
+bact1 <- make_seq_table('data/sequencing/processed/eden_bact_rep1_postclean_24.rds')
+bact2 <- make_seq_table('data/sequencing/processed/eden_bact_rep2_postclean_24.rds')
+bact3 <- make_seq_table('data/sequencing/processed/eden_bact_rep3_postclean_24.rds')
 
 rownames(bact1)
 rownames(bact2)
@@ -44,15 +44,15 @@ rownames(bact3)
 
 bact_merge <- mergeSequenceTables(tables = list(bact1, bact2, bact3))
 
-euk1 <- make_seq_table('data/sequencing/processed/eden_euc_rep1_postclean.rds')
-euk2 <- make_seq_table('data/sequencing/processed/eden_euc_rep2_postclean.rds')
-euk3 <- make_seq_table('data/sequencing/processed/eden_euc_rep3_postclean.rds')
+euk1 <- make_seq_table('data/sequencing/processed/eden_euc_rep1_postclean_24.rds')
+euk2 <- make_seq_table('data/sequencing/processed/eden_euc_rep2_postclean_24.rds')
+euk3 <- make_seq_table('data/sequencing/processed/eden_euc_rep3_postclean_24.rds')
 
 euk_merge <- mergeSequenceTables(tables = list(euk1, euk2, euk3))
 
-fungi1 <- make_seq_table('data/sequencing/processed/eden_fungi_rep1_postclean.rds')
-fungi2 <- make_seq_table('data/sequencing/processed/eden_fungi_rep2_postclean.rds')
-fungi3 <- make_seq_table('data/sequencing/processed/eden_fungi_rep3_postclean.rds')
+fungi1 <- make_seq_table('data/sequencing/processed/eden_fungi_rep1_postclean_24.rds')
+fungi2 <- make_seq_table('data/sequencing/processed/eden_fungi_rep2_postclean_24.rds')
+fungi3 <- make_seq_table('data/sequencing/processed/eden_fungi_rep3_postclean_24.rds')
 
 fungi_merge <- mergeSequenceTables(tables = list(fungi1, fungi2, fungi3))
 
@@ -74,19 +74,19 @@ get_sample_data <- function(file){
   return(d_samples)
 }
 
-sample_data_bact <- map_df(c('data/sequencing/processed/eden_bact_rep1_postclean.rds',
-                             'data/sequencing/processed/eden_bact_rep2_postclean.rds',
-                             'data/sequencing/processed/eden_bact_rep3_postclean.rds'),
+sample_data_bact <- map_df(c('data/sequencing/processed/eden_bact_rep1_postclean_24.rds',
+                             'data/sequencing/processed/eden_bact_rep2_postclean_24.rds',
+                             'data/sequencing/processed/eden_bact_rep3_postclean_24.rds'),
                            get_sample_data)
 
-sample_data_euk <- map_df(c('data/sequencing/processed/eden_euc_rep1_postclean.rds',
-                             'data/sequencing/processed/eden_euc_rep2_postclean.rds',
-                             'data/sequencing/processed/eden_euc_rep3_postclean.rds'),
+sample_data_euk <- map_df(c('data/sequencing/processed/eden_euc_rep1_postclean_24.rds',
+                             'data/sequencing/processed/eden_euc_rep2_postclean_24.rds',
+                             'data/sequencing/processed/eden_euc_rep3_postclean_24.rds'),
                            get_sample_data)
 
-sample_data_fungi <- map_df(c('data/sequencing/processed/eden_fungi_rep1_postclean.rds',
-                              'data/sequencing/processed/eden_fungi_rep2_postclean.rds',
-                              'data/sequencing/processed/eden_fungi_rep3_postclean.rds'),
+sample_data_fungi <- map_df(c('data/sequencing/processed/eden_fungi_rep1_postclean_24.rds',
+                              'data/sequencing/processed/eden_fungi_rep2_postclean_24.rds',
+                              'data/sequencing/processed/eden_fungi_rep3_postclean_24.rds'),
                             get_sample_data)
 
 #-------------------------------------#
@@ -104,9 +104,9 @@ get_taxa_data <- function(file){
   return(d_taxa)
 }
 
-taxa_data_bact <- map_df(c('data/sequencing/processed/eden_bact_rep1_postclean.rds',
-                             'data/sequencing/processed/eden_bact_rep2_postclean.rds',
-                             'data/sequencing/processed/eden_bact_rep3_postclean.rds'),
+taxa_data_bact <- map_df(c('data/sequencing/processed/eden_bact_rep1_postclean_24.rds',
+                             'data/sequencing/processed/eden_bact_rep2_postclean_24.rds',
+                             'data/sequencing/processed/eden_bact_rep3_postclean_24.rds'),
                            get_taxa_data) %>%
   distinct() %>%
   mutate(sequence = toupper(sequence))
@@ -123,16 +123,16 @@ to_check <- filter(taxa_data_bact, sequence %in% otus_to_check$sequence) %>%
   select(group_id, everything())
 
 # save out these sequences to check
-write.csv(to_check, 'data/sequencing/processed/eden_bact_to_check.csv', row.names = FALSE)
+#write.csv(to_check, 'data/sequencing/processed/eden_bact_to_check.csv', row.names = FALSE)
 
 # save out list of unique sequences to reassign taxonomy to
 select(taxa_data_bact, sequence) %>%
   distinct() %>%
   saveRDS('data/sequencing/processed/eden_bact_unique_sequence.rds')
 
-taxa_data_euk <- map_df(c('data/sequencing/processed/eden_euc_rep1_postclean.rds',
-                            'data/sequencing/processed/eden_euc_rep2_postclean.rds',
-                            'data/sequencing/processed/eden_euc_rep3_postclean.rds'),
+taxa_data_euk <- map_df(c('data/sequencing/processed/eden_euc_rep1_postclean_24.rds',
+                            'data/sequencing/processed/eden_euc_rep2_postclean_24.rds',
+                            'data/sequencing/processed/eden_euc_rep3_postclean_24.rds'),
                           get_taxa_data) %>%
   distinct()  %>%
   mutate(sequence = toupper(sequence)) 
@@ -153,7 +153,7 @@ group_by(taxa_data_euk, sequence) %>%
   filter(n > 1)
 
 # save out these sequences to check
-write.csv(to_check, 'data/sequencing/processed/eden_euk_to_check.csv', row.names = FALSE)
+#write.csv(to_check, 'data/sequencing/processed/eden_euk_to_check.csv', row.names = FALSE)
 
 # save out list of unique sequences to reassign taxonomy to
 select(taxa_data_euk, sequence) %>%
@@ -170,9 +170,9 @@ get_taxa_data <- function(file){
 }
 
 # do the same with fungi
-taxa_data_fungi <- map_df(c('data/sequencing/processed/eden_fungi_rep1_postclean.rds',
-                            'data/sequencing/processed/eden_fungi_rep2_postclean.rds',
-                            'data/sequencing/processed/eden_fungi_rep3_postclean.rds'),
+taxa_data_fungi <- map_df(c('data/sequencing/processed/eden_fungi_rep1_postclean_24.rds',
+                            'data/sequencing/processed/eden_fungi_rep2_postclean_24.rds',
+                            'data/sequencing/processed/eden_fungi_rep3_postclean_24.rds'),
                           get_taxa_data) %>%
   distinct()  %>%
   mutate(sequence = toupper(sequence))
@@ -193,7 +193,7 @@ group_by(taxa_data_fungi, sequence) %>%
   filter(n > 1)
 
 # save out these sequences to check
-write.csv(to_check, 'data/sequencing/processed/eden_fungi_to_check.csv', row.names = FALSE)
+#write.csv(to_check, 'data/sequencing/processed/eden_fungi_to_check.csv', row.names = FALSE)
 
 # save out list of unique sequences to reassign taxonomy to
 select(taxa_data_fungi, sequence) %>%
