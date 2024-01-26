@@ -88,8 +88,6 @@ ps_bact <- phyloseq(otu_table(bact_merge, taxa_are_rows = FALSE),
 
 ps_bact
 
-
-
 # load in taxonomy for eukaryotes
 tax_euk <- readRDS('data/sequencing/processed/taxtab/taxtab_euk.rds')
 
