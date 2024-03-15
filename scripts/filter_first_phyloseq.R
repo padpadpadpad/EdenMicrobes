@@ -1,4 +1,18 @@
-# first filter of the phyloseq objects and quick and dirty plot
+#---------------------------------------------------------------#
+# first filter of the phyloseq objects and quick and dirty plot #
+#---------------------------------------------------------------#
+
+# for each set of sequencing (bacteria, fungi, eukaryotes):
+# read in sample info
+# create new sample data
+# remove samples with less than 1000 reads
+# remove ASVs that are not assigned to a phylum
+# remove ASVs with read length < 100
+
+# there is one sample that is there twice
+# B802B3r1a and B802B3r1
+# Has been sequenced twice as much as all other individual PCRs, B802B3r1 was present in two wells in the PCR libraries
+# See how it clusters out
 
 # load in packages
 librarian::shelf(phyloseq, tidyverse)
@@ -26,6 +40,7 @@ new_sample_data <- sample_data(ps_fungi) %>%
   mutate(pcr = str_sub(sample_info, -1, -1),
          # add column for extraction replicate by grabbing the number between the r and p in sample info
          extraction = str_extract(sample_info, '(?<=r)\\d+(?=p)'),
+         extraction = ifelse(is.na(extraction), 1, extraction),
          # extract all text before the r
          sample = str_extract(sample_info, '.*(?=pcr)'),
          sample = str_extract(sample, '.*(?=r)'),
@@ -106,6 +121,7 @@ new_sample_data <- sample_data(ps_bact) %>%
   mutate(pcr = str_sub(sample_info, -1, -1),
          # add column for extraction replicate by grabbing the number between the r and p in sample info
          extraction = str_extract(sample_info, '(?<=r)\\d+(?=p)'),
+         extraction = ifelse(is.na(extraction), 1, extraction),
          # extract all text before the r
          sample = str_extract(sample_info, '.*(?=pcr)'),
          sample = str_extract(sample, '.*(?=r)'),
@@ -163,7 +179,7 @@ saveRDS(ps_bact_sub, 'data/sequencing/processed/phyloseq/ps_bact_sub.rds')
 # load in bact data
 ps_euk <- readRDS('data/sequencing/processed/phyloseq/ps_euk.rds')
 
-# look at taxonomy table for eukaryotes
+# look at taxonomy table for eukaryotes - compare numbers assigned to each level with that from metabar
 d_taxa <- tax_table(ps_euk) %>%
   data.frame() %>%
   pivot_longer(cols = everything(), names_to = 'rank', values_to = 'input') %>%
@@ -219,6 +235,7 @@ new_sample_data <- sample_data(ps_euk) %>%
   mutate(pcr = str_sub(sample_info, -1, -1),
          # add column for extraction replicate by grabbing the number between the r and p in sample info
          extraction = str_extract(sample_info, '(?<=r)\\d+(?=p)'),
+         extraction = ifelse(is.na(extraction), 1, as.numeric(extraction)),
          # extract all text before the r
          sample = str_extract(sample_info, '.*(?=pcr)'),
          sample = str_extract(sample, '.*(?=r)'),
