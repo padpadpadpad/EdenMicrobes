@@ -2,8 +2,6 @@
 
 bosque_euk <-metabarlist_generator(reads = reads, motus = motus, pcrs = pcrs, samples = samples2)
 
-#write.csv(samples,"samples_bosque_bact_clean.csv")
-
 # [1] Create Protist metabarlist
 # remove kingdom_silva Chloroplastida, Fungi and Metazoa
 motus$target_taxon <- !grepl("Metazoa", bosque_euk$motus$kingdom_silva)
