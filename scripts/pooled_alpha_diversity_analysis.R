@@ -25,7 +25,7 @@ if (!requireNamespace("librarian", quietly = TRUE)){
   install.packages("librarian")
 }
 # load packages
-librarian::shelf(adw96/breakaway, phyloseq, microbiome, tidyverse)
+librarian::shelf(adw96/breakaway, phyloseq, microbiome, tidyverse, furrr, lme4, patchwork)
 
 ## ---------------------------
 
@@ -126,6 +126,18 @@ mod1 <- betta_random(formula = estimate ~ 0 + biome | id_char,
 mod1$table
 # it says there is a significant difference between ecosystems but I do not believe it
 
+d_break2_sub <- d_break2_sub %>%
+  mutate(weights = 1/(error^2),
+         estimate_round = round(estimate, 0))
+
+mod1.2 <- glmer(estimate_round ~ biome + (1|id_char),
+                family = 'poisson',
+                d_break2_sub,
+                weights = 1/error)
+
+summary(mod1.2)
+emmeans::emmeans(mod1.2, pairwise ~ biome, type = 'response')
+
 # create empty dataframe
 betta_estimates1 <- data.frame(biome = unique(d_break2_sub$biome),
                               estimates = NA,
@@ -181,17 +193,103 @@ for(i in 1:nrow(betta_estimates2)){
 betta_estimates2 <- betta_estimates2 %>% 
   mutate(biome = ifelse(ecosystem %in% c('South_Africa', 'Australia', 'Vines', 'Citrus', 'Med'), 'Mediterranean', 'Rainforest'))
 
-betta_estimates <- bind_rows(betta_estimates1, betta_estimates2)
+betta_estimates <- bind_rows(betta_estimates1, betta_estimates2) %>%
+  mutate(ecosystem2 = gsub('_', ' ', ecosystem))
 
-ggplot(betta_estimates, aes(ecosystem, estimates, ymin = lower, ymax = upper)) +
-  geom_pointrange() +
+p1 <- ggplot(betta_estimates, aes(ecosystem2, estimates, ymin = lower, ymax = upper)) +
+  geom_pointrange(size = 1.2) +
   theme_bw() +
   facet_wrap(~biome, scales = 'free_x') +
-  theme_bw()
+  theme_bw(base_size = 14) +
+  labs(x = 'Ecosystem',
+       y = 'Richeness',
+       title = 'Richness estimates through frequency ratios.') +
+  scale_x_discrete(labels = scales::wrap_format(10))
 
-# remove samples
+# 2. rarefy the data and calculate richness
+
+# remove samples with less than 15000 reads
 ps_bact2 <- prune_samples(sample_sums(ps_bact2) > 15000, ps_bact2)
 
-# check frequency count table
-freq_table <- build_frequency_count_tables(otu_table(ps_bact2))
-freq_ct <- freq_table[[1]]
+# setup dataframe to store results
+n_boots <- 100
+
+d_rarefy <- tibble(iter = 1:n_boots)
+
+# create function to rarefy data and calculate richness
+rarefy_richness <- function(ps, sample_size){
+  temp <- rarefy_even_depth(ps, sample.size = sample_size)
+  temp <- estimate_richness(temp, split = TRUE) %>%
+    rownames_to_column(var = 'sample')
+  return(temp)
+}
+
+plan(multisession, workers = 4)
+
+d_rarefy <- mutate(d_rarefy, richness = furrr::future_map(iter, ~rarefy_richness(ps_bact2, 15000), .progress = TRUE))
+
+d_rarefy <- unnest(d_rarefy, richness)
+
+d_rarefy_sum <- group_by(d_rarefy, sample) %>%
+  summarise(mean_richness = mean(Observed), .groups = 'drop') %>%
+  mutate(mean_richness_whole = round(mean_richness, 0))
+
+d_rarefy_sum <- left_join(d_rarefy_sum, d_samp) %>%
+  group_by(ecosystem, quadrat, bed) %>%
+  mutate(id = as.character(cur_group_id())) %>%
+  ungroup() %>%
+  mutate(id2 = paste(id, quadrat_corner, sep = '_'),
+         biome = ifelse(ecosystem %in% c('South_Africa', 'Australia', 'Vines', 'Citrus', 'Med'), 'Mediterranean', 'Rainforest'))
+  
+# quick plot
+ggplot(d_rarefy_sum, aes(id, mean_richness)) +
+  geom_point() +
+  theme_bw() +
+  facet_wrap(~ecosystem, scales = 'free_x')
+
+# right lets look at modelling this using non-linear mixed models
+mod3 <- glmer(mean_richness_whole ~ biome + (1|ecosystem/id), family = 'poisson', data = d_rarefy_sum)
+mod4 <- glmer(mean_richness_whole ~ 1 + (1|ecosystem/id), family = 'poisson', data = d_rarefy_sum)
+summary(mod3)
+
+AIC(mod3, mod4)
+
+emmeans::emmeans(mod3, pairwise ~ biome, type = 'response')
+
+d_preds_biome <- emmeans::emmeans(mod3, pairwise ~ biome, type = 'response')$emmeans %>%
+  data.frame() %>%
+  mutate(ecosystem = 'all') %>%
+  select(biome, ecosystem, pred = rate, lower = asymp.LCL, upper = asymp.UCL)
+
+# get estimates for individual ecosystems by adding the random effect of each level of the random effect onto the fixed effect
+ranef(mod3) %>% lattice::dotplot()
+
+d_preds <- select(d_rarefy_sum, biome, ecosystem) %>%
+  distinct()
+
+new_predict <- function(x){predict(x, newdata = d_preds, re.form = ~1|ecosystem, type = 'response')}
+
+preds_boot <- bootMer(mod3, new_predict, re.form = ~1|ecosystem, nsim = 1000) %>%
+  confint(.)
+
+d_preds <- mutate(d_preds, pred = predict(mod3, newdata = d_preds, re.form = ~1|ecosystem, type = 'response')) %>%
+  bind_cols(., preds_boot) %>%
+  rename(lower = `2.5 %`, upper = `97.5 %`) %>%
+  bind_rows(d_preds_biome) %>%
+  mutate(ecosystem2 = gsub('_', ' ', ecosystem))
+
+p2 <- ggplot(d_preds, aes(ecosystem2, pred, ymin = lower, ymax = upper)) +
+  geom_pointrange(size = 1.2) +
+  theme_bw() +
+  facet_wrap(~biome, scales = 'free_x') +
+  scale_x_discrete(labels = scales::wrap_format(10)) +
+  theme_bw(base_size = 14) +
+  labs(x = 'Ecosystem',
+       y = 'Richeness',
+       title = 'Richness estimates through rarefaction.')
+
+p1 + p2 +
+  plot_layout(ncol = 1)
+
+# save plot
+ggsave('plots/richness_estimates.png', height = 8, width = 10)
