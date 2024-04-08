@@ -90,7 +90,7 @@ ps_bact
 
 # load in taxonomy for eukaryotes
 tax_euk <- readRDS('data/sequencing/processed/taxtab/taxtab_euk.rds')
-
+tax_euk <- tax_euk[1:nrow(tax_euk), 1:7] # drop NA column
 ps_euk <- phyloseq(otu_table(euk_merge, taxa_are_rows = FALSE),
                    sample_data(sample_data_euk),
                    tax_table(tax_euk))

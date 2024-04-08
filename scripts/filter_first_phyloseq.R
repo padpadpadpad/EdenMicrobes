@@ -15,7 +15,7 @@
 # See how it clusters out
 
 # load in packages
-librarian::shelf(phyloseq, tidyverse)
+librarian::shelf(phyloseq, david-barnett/microViz, tidyverse)
 
 #--------------#
 # for fungi ####
@@ -90,6 +90,8 @@ rownames(tax_table(ps_fungi_sub)) %>% nchar() %>% summary()
 
 # remove ASVs with read length < 100
 ps_fungi_sub <- prune_taxa(taxa_names(ps_fungi_sub)[nchar(rownames(tax_table(ps_fungi_sub))) > 100], ps_fungi_sub)
+
+ps_fungi_sub <- microViz::tax_filter(ps_fungi_sub, min_prevalence = 3, min_total_abundance = 3)
 
 # saved 
 saveRDS(ps_fungi_sub, 'data/sequencing/processed/phyloseq/ps_fungi_sub.rds')
@@ -168,6 +170,9 @@ rownames(tax_table(ps_bact_sub)) %>% nchar() %>% summary()
 
 # remove ASVs with read length < 200
 ps_bact_sub <- prune_taxa(taxa_names(ps_bact_sub)[nchar(rownames(tax_table(ps_bact_sub))) > 200], ps_bact_sub)
+
+# remove any ASVs that occur in at least 3 samples and have a minimum total abundance of 3
+ps_bact_sub <- microViz::tax_filter(ps_bact_sub, min_prevalence = 3, min_total_abundance = 3)
 
 # saved 
 saveRDS(ps_bact_sub, 'data/sequencing/processed/phyloseq/ps_bact_sub.rds')
@@ -285,6 +290,9 @@ rownames(tax_table(ps_euk_sub)) %>% nchar() %>% summary()
 
 # remove ASVs with read length < 80
 ps_euk_sub <- prune_taxa(taxa_names(ps_euk_sub)[nchar(rownames(tax_table(ps_euk_sub))) > 80], ps_euk_sub)
+
+# remove any ASVs that occur in at least 3 samples and have a minimum total abundance of 3
+ps_euk_sub <- microViz::tax_filter(ps_euk_sub, min_prevalence = 3, min_total_abundance = 3)
 
 # saved 
 saveRDS(ps_euk_sub, 'data/sequencing/processed/phyloseq/ps_euk_sub.rds')

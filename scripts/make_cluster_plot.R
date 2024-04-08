@@ -3,7 +3,7 @@
 #----------------------------------------------------#
 
 # load in packages
-librarian::shelf(monochromeR, padpadpadpad/MicrobioUoE, phyloseq, tidyverse)
+librarian::shelf(monochromeR, padpadpadpad/MicrobioUoE, phyloseq, eliocamp/ggnewscale, tidyverse)
 
 # function to make points lighter but not transparent
 alpha_hex <- function(hex_code, alpha = 1){
@@ -14,6 +14,14 @@ alpha_hex <- function(hex_code, alpha = 1){
     parse_number()
   
   return(rgba_to_hex(c(temp, alpha)))
+}
+
+
+# convert distance matrix to dataframe
+dist_2_df <- function(dist_ob){
+  m <- as.matrix(dist_ob) # coerce dist object to a matrix
+  xy <- t(combn(colnames(m), 2))
+  return(data.frame(xy, dist=m[xy], stringsAsFactors = FALSE))
 }
 
 #-----------------------#
@@ -55,6 +63,123 @@ if(file.exists('data/sequencing/processed/phyloseq/bact_dist_bray.rds')){
   saveRDS(dist_bray, 'data/sequencing/processed/phyloseq/bact_dist_bray.rds')
 }
 
+if(file.exists('data/sequencing/processed/phyloseq/bact_dist_jaccard.rds')){
+  dist_jac <- readRDS('data/sequencing/processed/phyloseq/bact_dist_jaccard.rds')
+} else {
+  dist_jac <- distance(ps_prop, method = 'jaccard', binary = TRUE)
+  saveRDS(dist_jac, 'data/sequencing/processed/phyloseq/bact_dist_jaccard.rds')
+}
+
+d_jac <- dist_2_df(dist_jac)
+
+# run a for loop to check whether each pair is the same extraction, corner, quadrat, bed, ecosystem, or biome - Not the most eloquent but allowed me to hard code stuff properly
+
+# start a progress bar
+pb <- progress::progress_bar$new(total = nrow(d_jac))
+
+# set up a bunch of empty vectors to store results
+d_jac <- mutate(d_jac, same_extraction = NA, 
+                same_corner = NA, 
+                same_quadrat = NA, 
+                same_bed = NA, 
+                same_ecosystem = NA, 
+                same_biome = NA)
+
+for(i in 1:nrow(d_jac)){
+  
+  # tick progress bar
+  pb$tick()
+  
+  # get metadata for X1
+  temp_X1 <- d_samp[rownames(d_samp) == d_jac$X1[i],]
+  temp_X2 <- d_samp[rownames(d_samp) == d_jac$X2[i],]
+  
+  # if they have the same sample ID, then put yes in same extraction, otherwise put no
+  if(temp_X1$sample_id == temp_X2$sample_id){
+    d_jac$same_extraction[i] <- 'yes'
+  }else d_jac$same_extraction[i] <- 'no'
+  
+  # if they have the same sample then put yes in same corner, otherwise put no
+  if(temp_X1$sample == temp_X2$sample){
+    d_jac$same_corner[i] <- 'yes'
+  }else d_jac$same_corner[i] <- 'no'
+
+  # if they have the same quadrat and bed then put yes in same quadrat, otherwise put no
+  if(temp_X1$quadrat == temp_X2$quadrat & temp_X1$bed == temp_X2$bed){
+    d_jac$same_quadrat[i] <- 'yes'
+  }else d_jac$same_quadrat[i] <- 'no'
+  
+  # if they have the same bed, then put yes in same bed, otherwise put no
+  if(temp_X1$bed == temp_X2$bed){
+    d_jac$same_bed[i] <- 'yes'
+  }else d_jac$same_bed[i] <- 'no'
+  
+  # if they have the same ecosystem, then put yes in same ecosystem, otherwise put no
+  if(temp_X1$ecosystem == temp_X2$ecosystem){
+    d_jac$same_ecosystem[i] <- 'yes'
+  }else d_jac$same_ecosystem[i] <- 'no'
+  
+  # if they have the same biome, then put yes in same biome, otherwise put no
+  if(temp_X1$biome == temp_X2$biome){
+    d_jac$same_biome[i] <- 'yes'
+  }else d_jac$same_biome[i] <- 'no'
+  
+}
+
+d_jac <- left_join(d_jac, select(d_samp, ecosystem, biome) %>% rownames_to_column(var = 'X1'))
+
+head(d_jac)
+
+d_same_extraction <- d_jac %>%
+  filter(same_extraction == 'yes') %>%
+  mutate(type = 'extraction')
+d_same_corner <- d_jac %>%
+  filter(same_corner == 'yes') %>%
+  filter(same_extraction == 'no') %>%
+  mutate(type = 'corner')
+d_same_quadrat <- d_jac %>%
+  filter(same_quadrat == 'yes') %>%
+  filter(same_corner == 'no') %>%
+  mutate(type = 'quadrat')
+d_same_bed <- d_jac %>%
+  filter(same_bed == 'yes') %>%
+  filter(same_quadrat == 'no') %>%
+  mutate(type = 'bed')
+d_same_ecosystem <- d_jac %>%
+  filter(same_ecosystem == 'yes') %>%
+  filter(same_bed == 'no') %>%
+  mutate(type = 'ecosystem')
+d_same_biome <- d_jac %>%
+  filter(same_biome == 'yes') %>%
+  filter(same_ecosystem == 'no') %>%
+  mutate(type = 'biome')
+
+d_jac2 <- bind_rows(d_same_extraction, d_same_corner, d_same_quadrat, d_same_bed, d_same_ecosystem, d_same_biome) %>%
+  select(dist, type, dist, ecosystem, biome) %>%
+  mutate(reorder = case_when(type == 'extraction' ~ 1,
+                             type == 'corner' ~ 2,
+                             type == 'quadrat' ~ 3,
+                             type == 'bed' ~ 4,
+                             type == 'ecosystem' ~ 5,
+                             type == 'biome' ~ 6))
+
+d_jac2 %>%
+  ggplot(aes(forcats::fct_reorder(type, reorder), dist)) +
+  geom_pretty_boxplot(aes(col = type, fill = type), show.legend = FALSE) +
+  geom_point(aes(col = type), shape = 21, fill = 'white', position = position_jitter(width = 0.2), alpha = 0.2) +
+  facet_wrap(~ecosystem) +
+  theme_bw() +
+  guides(col = guide_legend(override.aes = list(shape = 16, alpha = 1))) +
+  labs(y = 'Jaccards distance', x = 'Sampling level',
+       title = 'Jaccards distance between samples at the same sampling level') +
+  scale_color_brewer('Level of replication', palette = 'Set1', type = 'qual') +
+  scale_fill_brewer('Level of replication', palette = 'Set1', type = 'qual') +
+  theme(axis.text.x = element_text(angle = 315, hjust = 0)) +
+  NULL
+
+# save this out
+ggsave('plots/jaccards_bacteria.png', width = 12, height = 8)
+
 # create a pcoa data set - choose only eigenvalues that are > 0
 #https://stackoverflow.com/questions/8924488/applying-the-pvclust-r-function-to-a-precomputed-dist-object#27148408
 # error message tells how may eigenvalues are > 0
@@ -70,7 +195,7 @@ correct_eigenvalues <- ape::pcoa(dist_bray, correction = 'cailliez') %>%
 # how many axes to explain 50% of the data
 filter(correct_eigenvalues, cumul_eig < 0.5) %>%
   nrow()
-# 38
+# 30
 
 # plot scree plot for every eigenvalue worth 1%
 filter(correct_eigenvalues, relative_eig > 0.01) %>%
@@ -93,7 +218,6 @@ d_samples <- cbind(d_samp, d_pcoa)
 d_samples_long <- d_samples %>%
   select(-sample_id) %>%
   pivot_longer(cols = starts_with('axis'), names_to = 'axis', values_to = 'value')
-
 
 # calculate extraction centroids based on a each extraction ####
 
@@ -226,9 +350,9 @@ hist(d_distance_eco_centroids$dist)
 
 # calculate distance between ecosystem centroids and quadrat centroids
 d_eco_points_2_centroid <- left_join(select(d_eco_centroids, biome, ecosystem, centroid_PCoA1 = axis_1, centroid_PCoA2 = axis_2), bind_rows(filter(d_quad_centroids, !ecosystem %in% c('Australia', 'South_Africa')) %>%
-                                                                                                                                             select(biome, ecosystem, sample_PCoA1 = axis_1, sample_PCoA2 = axis_2),
-                                                                                                                                           filter(d_bed_centroids, ecosystem %in% c('Australia', 'South_Africa')) %>%
-                                                                                                                                             select(biome, ecosystem, sample_PCoA1 = axis_1, sample_PCoA2 = axis_2)))
+                                                                                                                                              select(biome, ecosystem, sample_PCoA1 = axis_1, sample_PCoA2 = axis_2),
+                                                                                                                                            filter(d_bed_centroids, ecosystem %in% c('Australia', 'South_Africa')) %>%
+                                                                                                                                              select(biome, ecosystem, sample_PCoA1 = axis_1, sample_PCoA2 = axis_2)))
 
 # calculate biome centroids ####
 
@@ -271,10 +395,10 @@ ggplot() +
   scale_colour_manual(values = purrr::map_vec(colours, alpha_hex, alpha = 0.8)) +
   ggnewscale::new_scale_colour() +
   geom_point(aes(axis_1, axis_2, col = ecosystem), d_quad_centroids, size = 5, show.legend = FALSE) +
-  scale_colour_manual(values = purrr::map_vec(colours, alpha_hex, alpha = 0.6)) +
+  scale_colour_manual(values = purrr::map_vec(colours, alpha_hex, alpha = 0.6), guide = 'none') +
   ggnewscale::new_scale_colour() +
   geom_point(aes(axis_1, axis_2, col = ecosystem), d_corner_centroids, size = 3, show.legend = FALSE) +
-  scale_colour_manual(values = purrr::map_vec(colours, alpha_hex, alpha = 0.4)) +
+  scale_colour_manual(values = purrr::map_vec(colours, alpha_hex, alpha = 0.4), guide = 'none') +
   ggnewscale::new_scale_colour() +
   geom_point(aes(axis_1, axis_2, col = ecosystem), d_ext_centroids, size = 1.5, show.legend = FALSE) +
   scale_colour_manual(values = purrr::map_vec(colours, alpha_hex, alpha = 0.2)) +
@@ -284,8 +408,8 @@ ggplot() +
   theme_bw(base_size = 14) +
   theme(panel.grid.major = element_blank(),
         panel.grid.minor = element_blank()) +
-  labs(x = 'Axis 1 (12.6%)',
-       y = 'Axis 2 (5%)') +
+  labs(x = 'Axis 1 (13.6%)',
+       y = 'Axis 2 (5.4%)') +
   #facet_wrap(~ecosystem, scales = 'free') +
   NULL
 
@@ -294,17 +418,17 @@ ggsave('plots/pcoa_all_bacteria.png', width = 12, height = 8)
 # combine the distances into one dataframe
 d_distance_all <- bind_rows(
   select(d_distance_ext_centroids, biome, ecosystem, dist) %>% mutate(type = 'PCR',
-                                                                     order = 1),
+                                                                      order = 1),
   select(d_distance_corner_centroids, biome, ecosystem, dist) %>% mutate(type = 'Extraction',
-                                                                     order = 2),
+                                                                         order = 2),
   select(d_distance_quad_centroids, biome, ecosystem, dist) %>% mutate(type = 'Quadrat corner',
-                                                                     order = 4),
+                                                                       order = 4),
   select(d_distance_bed_centroids, biome, ecosystem, dist) %>% mutate(type = 'Quadrat',
                                                                       order = 5),
   select(d_distance_eco_centroids, biome, ecosystem, dist) %>% mutate(type = 'Bed',
-                                                                     order = 6),
+                                                                      order = 6),
   select(d_distance_biome_centroids, biome, ecosystem, dist) %>% mutate(type = 'Ecosystem',
-                                                                     order = 7)
+                                                                        order = 7)
 )
 
 ggplot(d_distance_all, aes(forcats::fct_reorder(type, order), dist)) +
@@ -315,7 +439,6 @@ ggplot(d_distance_all, aes(forcats::fct_reorder(type, order), dist)) +
        y = 'Distance between replicates at that level') +
   scale_color_brewer('Level of replication', palette = 'Set1', type = 'qual') +
   scale_fill_brewer('Level of replication', palette = 'Set1', type = 'qual') +
-  facet_wrap(~biome) +
   NULL
 
 ggsave('plots/distance_all_bacteria.png', width = 8, height = 4)
@@ -374,7 +497,7 @@ correct_eigenvalues <- ape::pcoa(dist_bray, correction = 'cailliez') %>%
 # how many axes to explain 50% of the data
 num_axes <- filter(correct_eigenvalues, cum_corr_eig < 0.5) %>%
   nrow()
-# 22
+# 21
 
 # plot scree plot for every eigenvalue worth 1%
 filter(correct_eigenvalues, rel_corr_eig > 0.01) %>%
@@ -587,8 +710,8 @@ ggplot() +
   theme_bw(base_size = 14) +
   theme(panel.grid.major = element_blank(),
         panel.grid.minor = element_blank()) +
-  labs(x = 'Axis 1 (5.9%)',
-       y = 'Axis 2 (4.3%)') +
+  labs(x = 'Axis 1 (6.1%)',
+       y = 'Axis 2 (4.4%)') +
   #facet_wrap(~ecosystem, scales = 'free') +
   NULL
 
