@@ -25,9 +25,11 @@ if (!requireNamespace("librarian", quietly = TRUE)){
   install.packages("librarian")
 }
 # load packages
-librarian::shelf(adw96/breakaway, phyloseq, microbiome, tidyverse, furrr, lme4, patchwork)
+librarian::shelf(adw96/breakaway, phyloseq, microbiome, tidyverse, furrr, lme4, easystats, patchwork)
 
 ## ---------------------------
+
+# read everything in and do initial wrangling ####
 
 # set seed
 set.seed(42)
@@ -85,11 +87,12 @@ ps_bact2 %>%
 # there are a bunch of ways to do this, some people think rarefying is crap, some people think rarefying is the best way to go. Both of these sets of people are smart. We shall use a couple of different approaches and try and do the analysis
 
 # 1. use breakaway to estimate species richness per sample
-d_break <- breakaway(ps_bact2)
+d_break <- breakaway(ps_bact2, cutoff = 15)
 plot(d_break)
+# the choice of cutoff influences the maximum frequency count used for model fitting. The default is 10, here I use 15 for no reason.
 
 # make it into a tibble
-d_break2 <- summary(d_break) %>% as_tibble()
+d_break2 <- summary(d_break) %>% data.frame()
 head(d_break2)
 
 d_break2 <- left_join(rename(d_break2, sample = sample_names), d_samp) %>%
@@ -106,11 +109,12 @@ ggplot(d_break2_sub, aes(id, log(estimate))) +
   facet_wrap(~ecosystem, scales = 'free_x') +
   theme_bw()
 # a few of these look absolutely bonkers in terms of estimate and uncertainty
-# would recommend checking these
-# Amazon 1_1, Australia 6_1 and 6_3, Citrus 12_2, Cocoa 13_3, Med 19_1 and 22_1, South Africa 26_2, Vines 28_2, West_Africa 32_2
+# would recommend checking/removing these
+# 17_2, 19_2, 22_1, 24_2, 28_2
 
+# remove bonkers estimates
 d_break2_sub <- d_break2 %>%
-  filter(!id2 %in% c('1_2', '6_1', '6_3', '12_2', '13_3', '19_1', '22_1', '26_2', '28_2', '32_2')) %>%
+  filter(!id2 %in% c('17_2', '19_2', '22_1', '24_2', '28_2')) %>%
   mutate(id_char = as.character(id))
 
 # run statistical analysis 
@@ -126,24 +130,12 @@ mod1 <- betta_random(formula = estimate ~ 0 + biome | id_char,
 mod1$table
 # it says there is a significant difference between ecosystems but I do not believe it
 
-d_break2_sub <- d_break2_sub %>%
-  mutate(weights = 1/(error^2),
-         estimate_round = round(estimate, 0))
-
-mod1.2 <- glmer(estimate_round ~ biome + (1|id_char),
-                family = 'poisson',
-                d_break2_sub,
-                weights = 1/error)
-
-summary(mod1.2)
-emmeans::emmeans(mod1.2, pairwise ~ biome, type = 'response')
-
 # create empty dataframe
 betta_estimates1 <- data.frame(biome = unique(d_break2_sub$biome),
-                              estimates = NA,
-                              standard_errors = NA,
-                              lower = NA,
-                              upper = NA, ecosystem = 'all')
+                               estimates = NA,
+                               standard_errors = NA,
+                               lower = NA,
+                               upper = NA, ecosystem = 'all')
 
 # set vector for linear model matrix where everything is switched off
 linear_com <- rep(0, times = nrow(betta_estimates1))
@@ -159,22 +151,20 @@ for(i in 1:nrow(betta_estimates1)){
   betta_estimates1$upper[i] <- temp$`Upper CIs`
 }
 
-
 # look for variation between ecosystems
 mod2 <- betta_random(formula = estimate ~ 0 + ecosystem | id_char, 
                      ses = error,
                      data = d_break2_sub)
 mod2$table
 mod2$ssq_group
-
 # get confidence interval of each estimate using betta_lincom
 
 # create empty dataframe
 betta_estimates2 <- data.frame(ecosystem = unique(d_break2_sub$ecosystem),
-                              estimates = NA,
-                              standard_errors = NA,
-                              lower = NA,
-                              upper = NA)
+                               estimates = NA,
+                               standard_errors = NA,
+                               lower = NA,
+                               upper = NA)
 
 # set vector for linear model matrix where everything is switched off
 linear_com <- rep(0, times = nrow(betta_estimates2))
@@ -196,24 +186,84 @@ betta_estimates2 <- betta_estimates2 %>%
 betta_estimates <- bind_rows(betta_estimates1, betta_estimates2) %>%
   mutate(ecosystem2 = gsub('_', ' ', ecosystem))
 
-p1 <- ggplot(betta_estimates, aes(ecosystem2, estimates, ymin = lower, ymax = upper)) +
+# do weighted poisson model
+
+# add in column for weight and round the estimate to the nearest whole number so that glmer() can use.
+# weights is 1/se^2
+d_break2_sub <- d_break2_sub %>%
+  mutate(weights = 1/(error^2),
+         estimate_round = round(estimate, 0))
+
+# run glmer
+mod1.2 <- glmer(estimate_round ~ biome + (1|ecosystem/id_char),
+                family = 'poisson',
+                d_break2_sub,
+                weights = 1/weights)
+mod1.3 <- glmer(estimate_round ~ 1 + (1|ecosystem/id_char),
+                family = 'poisson',
+                d_break2_sub,
+                weights = 1/weights)
+AIC(mod1.2, mod1.3)
+summary(mod1.2)
+
+# check model performance - pretty good
+performance::check_model(mod1.2)
+
+# calculate pairwise estimate between biomes
+emmeans::emmeans(mod1.2, pairwise ~ biome, type = 'response')
+
+# get predictions
+d_preds_biome <- emmeans::emmeans(mod1.2, pairwise ~ biome, type = 'response')$emmeans %>%
+  data.frame() %>%
+  mutate(ecosystem = 'all') %>%
+  select(biome, ecosystem, pred = rate, lower = asymp.LCL, upper = asymp.UCL)
+
+# get estimates for individual ecosystems by adding the random effect of each level of the random effect onto the fixed effect
+ranef(mod1.2) %>% lattice::dotplot()
+
+d_preds <- select(d_break2_sub, biome, ecosystem) %>%
+  distinct()
+
+# write functions to predict at each ecosystem value from the model
+new_predict <- function(x){predict(x, newdata = d_preds, re.form = ~1|ecosystem, type = 'response')}
+
+# bootstrap it and calculate confidence intervals
+preds_boot <- bootMer(mod1.2, function(x){predict(x, newdata = d_preds, re.form = ~1|ecosystem, type = 'response')}, re.form = ~1|ecosystem, nsim = 1000) %>%
+  confint(.)
+
+# tidy predictions
+d_preds <- mutate(d_preds, pred = predict(mod1.2, newdata = d_preds, re.form = ~1|ecosystem, type = 'response')) %>%
+  bind_cols(., preds_boot) %>%
+  rename(lower = `2.5 %`, upper = `97.5 %`) %>%
+  bind_rows(d_preds_biome) %>%
+  mutate(ecosystem2 = gsub('_', ' ', ecosystem))
+
+d_break2_sub <- mutate(d_break2_sub, ecosystem2 = gsub('_', ' ', ecosystem))
+
+# make plot
+p1 <- ggplot(d_preds, aes(ecosystem2, pred, ymin = lower, ymax = upper)) +
   geom_pointrange(size = 1.2) +
+  geom_point(aes(x = ecosystem2, y = estimate_round), d_break2_sub, position = position_jitter(width = 0.1), shape = 21, fill = 'white') +
   theme_bw() +
   facet_wrap(~biome, scales = 'free_x') +
   theme_bw(base_size = 14) +
   labs(x = 'Ecosystem',
        y = 'Richeness',
        title = 'Richness estimates through frequency ratios.') +
-  scale_x_discrete(labels = scales::wrap_format(10))
+  scale_x_discrete(labels = scales::wrap_format(10)) +
+  ylim(c(0, 25000))
+
+p1
 
 # 2. rarefy the data and calculate richness
 
 # remove samples with less than 15000 reads
 ps_bact2 <- prune_samples(sample_sums(ps_bact2) > 15000, ps_bact2)
 
-# setup dataframe to store results
+# number of times to rarefy
 n_boots <- 100
 
+# setup dataframe to store results
 d_rarefy <- tibble(iter = 1:n_boots)
 
 # create function to rarefy data and calculate richness
@@ -224,12 +274,14 @@ rarefy_richness <- function(ps, sample_size){
   return(temp)
 }
 
+# set up virtual cluster
 plan(multisession, workers = 4)
 
-d_rarefy <- mutate(d_rarefy, richness = furrr::future_map(iter, ~rarefy_richness(ps_bact2, 15000), .progress = TRUE))
+# create rarefied datasets
+d_rarefy <- mutate(d_rarefy, richness = furrr::future_map(iter, ~rarefy_richness(ps_bact2, 15000), .progress = TRUE)) %>%
+  unnest(., richness)
 
-d_rarefy <- unnest(d_rarefy, richness)
-
+# create average richness per sample
 d_rarefy_sum <- group_by(d_rarefy, sample) %>%
   summarise(mean_richness = mean(Observed), .groups = 'drop') %>%
   mutate(mean_richness_whole = round(mean_richness, 0))
@@ -253,7 +305,6 @@ mod4 <- glmer(mean_richness_whole ~ 1 + (1|ecosystem/id), family = 'poisson', da
 summary(mod3)
 
 AIC(mod3, mod4)
-
 emmeans::emmeans(mod3, pairwise ~ biome, type = 'response')
 
 d_preds_biome <- emmeans::emmeans(mod3, pairwise ~ biome, type = 'response')$emmeans %>%
@@ -267,8 +318,10 @@ ranef(mod3) %>% lattice::dotplot()
 d_preds <- select(d_rarefy_sum, biome, ecosystem) %>%
   distinct()
 
+# write function to get predictions
 new_predict <- function(x){predict(x, newdata = d_preds, re.form = ~1|ecosystem, type = 'response')}
 
+# bootstrap predictions
 preds_boot <- bootMer(mod3, new_predict, re.form = ~1|ecosystem, nsim = 1000) %>%
   confint(.)
 
@@ -278,8 +331,12 @@ d_preds <- mutate(d_preds, pred = predict(mod3, newdata = d_preds, re.form = ~1|
   bind_rows(d_preds_biome) %>%
   mutate(ecosystem2 = gsub('_', ' ', ecosystem))
 
-p2 <- ggplot(d_preds, aes(ecosystem2, pred, ymin = lower, ymax = upper)) +
-  geom_pointrange(size = 1.2) +
+d_rarefy_sum <- mutate(d_rarefy_sum, ecosystem2 = gsub('_', ' ', ecosystem))
+
+# plot
+p2 <- ggplot(d_preds) +
+  geom_pointrange(aes(x = ecosystem2, y = pred, ymin = lower, ymax = upper), size = 1.2) +
+  geom_point(aes(x = ecosystem2, y = mean_richness_whole), d_rarefy_sum, position = position_jitter(width = 0.1), shape = 21, fill = 'white') +
   theme_bw() +
   facet_wrap(~biome, scales = 'free_x') +
   scale_x_discrete(labels = scales::wrap_format(10)) +
